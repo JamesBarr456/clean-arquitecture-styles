@@ -9,7 +9,7 @@ export class UserEntity {
         public dni?: string,
         public number_phone?: string,
         public created_at?: Date,
-        public update_at? : Date,
+        public updated_at? : Date,
         public id?: string,
         public avatar?: string,
     ){}
