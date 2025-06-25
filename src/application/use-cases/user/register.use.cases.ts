@@ -1,5 +1,5 @@
-import { UserEntity } from "../../entities/user.entity";
-import { UserRepository } from "../../repositories/user.repository";
+import { UserEntity } from "../../../domain/entities/user.entity";
+import { UserRepository } from "../../../domain/repositories/user.repository";
 
 
 export class RegisterUserUseCase {

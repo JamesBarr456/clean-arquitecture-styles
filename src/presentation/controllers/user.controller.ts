@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { MongoUserRepository } from "../../infraestructure/repositories/mongo.user.repository";
-import { RegisterUserUseCase } from "../../domain/use-cases";
+import { RegisterUserUseCase } from "../../application/use-cases";
 
 
 export class UserController {

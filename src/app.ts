@@ -1,6 +1,6 @@
 
 import { envs } from './config/envs';
-import { MongoDatabase } from './infraestructure';
+// import { MongoDatabase } from './infraestructure';
 import { AppRoutes } from './presentation/routes/routes';
 import { Server } from './presentation/server';
 

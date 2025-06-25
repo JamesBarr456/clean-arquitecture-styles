@@ -4,7 +4,7 @@
   "description": "��#\u0000 \u0000c\u0000l\u0000e\u0000a\u0000n\u0000-\u0000a\u0000r\u0000q\u0000u\u0000i\u0000t\u0000e\u0000c\u0000t\u0000u\u0000r\u0000e\u0000-\u0000s\u0000t\u0000y\u0000l\u0000e\u0000s\u0000\r\u0000 \u0000",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
     "build": "tsc",
     "start": "node dist/index.js"
   },
