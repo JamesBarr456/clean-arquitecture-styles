@@ -1,9 +1,9 @@
 import { EncryptService } from '../../../domain/services/encrypt.service';
+import { LoginUserDto } from '../../dto/login.user.dto';
+import { TokenService } from '../../../domain/services/token.service';
 import { UserEntity } from '../../../domain/entities/user.entity';
 import { UserRepository } from '../../../domain/repositories/user.repository';
 import { Validation } from '../../validators/validation';
-import { LoginUserDto } from '../../dto/login.user.dto';
-import { TokenService } from '../../../domain/services/token.service';
 
 export class LoginUserUseCase {
     constructor(
@@ -19,15 +19,18 @@ export class LoginUserUseCase {
         if (!user) {
             throw new Error('Email not found');
         }
-        const comparePassword = await this.encryptService.compare(validated.password, user.password);
+        const comparePassword = await this.encryptService.compare(
+            validated.password,
+            user.password
+        );
         if (!comparePassword) {
             throw new Error('Invalid password');
         }
-         const token = this.tokenService.sign({
-      id: user.id,
-      email: user.email,
-      status: user.status
-    });
+        const token = this.tokenService.sign({
+            id: user.id,
+            email: user.email,
+            status: user.status,
+        });
         return { user, token };
     }
 }
