@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/JamesBarr456/clean-arquitecture-styles#readme",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "dotenv": "^16.5.0",
     "env-var": "^7.5.0",
     "express": "^5.1.0",
@@ -27,6 +28,7 @@
     "zod": "^3.25.67"
   },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.3",
     "@types/node": "^24.0.3",
     "prettier": "^3.5.3",
