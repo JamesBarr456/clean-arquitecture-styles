@@ -1,12 +1,12 @@
+import { AuthRepository } from '../../../domain';
 import { EncryptService } from '../../../domain/services/encrypt.service';
 import { RegisterUserDto } from '../../dto/register.user.dto';
 import { UserEntity } from '../../../domain/entities/user.entity';
-import { UserRepository } from '../../../domain/repositories/user.repository';
 import { Validation } from '../../validators/validation';
 
 export class RegisterUserUseCase {
     constructor(
-        private readonly userRepository: UserRepository,
+        private readonly authRepository: AuthRepository,
         private readonly validator: Validation<RegisterUserDto>,
         private readonly encryptService: EncryptService
     ) {}
@@ -18,7 +18,7 @@ export class RegisterUserUseCase {
             ...validated,
             password: hashedPassword,
         });
-        const createdUser = await this.userRepository.create(newUser);
+        const createdUser = await this.authRepository.create(newUser);
         return createdUser;
     }
 }

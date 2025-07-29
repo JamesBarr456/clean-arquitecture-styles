@@ -15,8 +15,5 @@
 - Ya se encuentra implementado el repositorio de presentation.
 - Se encuentra funcionando las rutas de auth y controladores.
 ### 💡 Tareas a realizar
-- Poner en funcionamiento la base de datos
-- Hacer las validaciones de datos con zod o dtos
-- Hacer el hasheo del password
-- Ver para implementar otras funcionalidades
+- 
 ---
