@@ -3,6 +3,21 @@ import { UserRepository } from "../../domain/repositories/user.repository";
 import { UserModel } from "../database/mongo/models";
 
 export class MongoUserRepository extends UserRepository {
+  private toEntity(user: any): UserEntity {
+  return new UserEntity(
+    user.first_name,
+    user.last_name,
+    user.email,
+    user.password,
+    user.dni,
+    user.number_phone,
+    user.created_at,
+    user.updated_at,
+    user._id.toString(),
+    user.avatar,
+    user.status
+  );
+}
     async create(user: UserEntity): Promise<UserEntity> {
       const created = await UserModel.create({
         first_name: user.first_name,
@@ -14,17 +29,12 @@ export class MongoUserRepository extends UserRepository {
         updated_at: user.updated_at
       });
   
-      return new UserEntity(
-        created.first_name,
-        created.last_name,
-        created.email,
-        created.password,
-        created.dni,
-        created.number_phone,
-        created.created_at,
-        created.updated_at,
-        created._id.toString(),
-        created.avatar
-      )
+      return this.toEntity(created)
     }
+
+    async findByEmail(email: string): Promise<UserEntity | null> {
+        const user = await UserModel.findOne({ email }).exec();
+        if (!user) return null;
+        return this.toEntity(user)
+   }
   }

@@ -11,7 +11,8 @@ export class UserEntity {
         public created_at?: Date,
         public updated_at?: Date,
         public id?: string,
-        public avatar?: string
+        public avatar?: string,
+        public status: 'admin' | 'customer' | 'employee' = 'customer'
     ) {}
 
     static createFromRegister(data: {

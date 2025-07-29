@@ -13,19 +13,12 @@ export class RegisterUserUseCase {
 
     async execute(input: any): Promise<UserEntity> {
         const validated = this.validator.validate(input);
-
-        // 🔐 Encriptamos la contraseña
         const hashedPassword = await this.encryptService.hash(validated.password);
-
-        // 🧱 Creamos entidad con contraseña hasheada
         const newUser = UserEntity.createFromRegister({
             ...validated,
             password: hashedPassword,
         });
-
-        // 💾 Guardamos en la base de datos
         const createdUser = await this.userRepository.create(newUser);
-
         return createdUser;
     }
 }

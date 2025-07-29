@@ -16,8 +16,13 @@ export class Authroutes {
     const controller = new UserController();
     
     // Definir las rutas
-    router.post('/register', controller.register);;
-
+    router.post('/register', controller.register);
+    router.post('/login', controller.login);
+    // router.get('/users', controller.);
+    // router.get('/users/:id', controller.);
+    // router.patch('/users/:id', controller.);
+    // router.delete('/users/:id', controller.);
+    // router.get('/users/search', controller.);
     return router;
   }
 
