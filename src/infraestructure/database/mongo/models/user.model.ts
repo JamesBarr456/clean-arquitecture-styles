@@ -34,8 +34,8 @@ const userSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["admin", "user"],
-        default: "user",
+        enum: ["ADMIN", "CUSTOMER", "EMPLOYEE"],
+        default: "CUSTOMER",
       },
       created_at: {
         type: Date,
