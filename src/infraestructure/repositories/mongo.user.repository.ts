@@ -30,4 +30,10 @@ export class MongoUserRepository extends UserRepository {
         if (!user) return null;
         return this.toEntity(user);
     }
+
+    async findAll(): Promise<UserEntity[] | null> {
+        const users = await UserModel.find().exec();
+        if (!users) throw new Error('No users found');
+        return users.map(user => this.toEntity(user));
+    }
 }
