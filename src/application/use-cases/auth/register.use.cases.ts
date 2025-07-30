@@ -1,6 +1,6 @@
 import { AuthRepository } from '../../../domain';
 import { EncryptService } from '../../../domain/services/encrypt.service';
-import { RegisterUserDto } from '../../dto/register.user.dto';
+import { RegisterUserDto } from '../../dto/auth/register.auth.dto';
 import { UserEntity } from '../../../domain/entities/user.entity';
 import { Validation } from '../../validators/validation';
 

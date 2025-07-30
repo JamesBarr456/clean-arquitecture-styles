@@ -3,12 +3,12 @@ import { Request, Response } from 'express';
 
 import { BcryptEncryptService } from '../../infraestructure/services/bcrypt.encript.service';
 import { JwtTokenService } from '../../infraestructure/services/jwt.token.service';
-import { LoginUserUseCase } from '../../application/use-cases/auth/login.use.cases';
-import { RegisterUserSchema } from '../../application/dto/register.user.dto';
+import { LoginUserUseCase } from '../../application/use-cases/auth';
+import { RegisterUserSchema } from '../../application/dto/auth';
 import { RegisterUserUseCase } from '../../application/use-cases';
 import { ZodAdapter } from '../../application/validators/zod.adapter';
 import { envs } from '../../config/envs';
-import { loginUserSchema } from '../../application/dto/login.user.dto';
+import { loginUserSchema } from '../../application/dto/auth';
 
 export class AuthController {
     private readonly authRepository = new MongoAuthRepository();

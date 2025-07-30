@@ -1,5 +1,5 @@
 import { EncryptService } from '../../../domain/services/encrypt.service';
-import { LoginUserDto } from '../../dto/login.user.dto';
+import { LoginUserDto } from '../../dto/auth/login.auth.dto';
 import { TokenService } from '../../../domain/services/token.service';
 import { UserEntity } from '../../../domain/entities/user.entity';
 import { UserRepository } from '../../../domain/repositories/user.repository';

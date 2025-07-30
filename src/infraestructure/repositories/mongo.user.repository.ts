@@ -1,6 +1,7 @@
 import { UserEntity } from '../../domain';
 import { UserModel } from '../database/mongo/models';
-import { UserRepository } from '../../domain/repositories/user.repository';
+import { UserRepository } from '../../domain/repositories';
+import { UserFilterOptions } from '../../application/dto/users';
 
 export class MongoUserRepository extends UserRepository {
     private toEntity(user: any): UserEntity {
@@ -31,9 +32,28 @@ export class MongoUserRepository extends UserRepository {
         return this.toEntity(user);
     }
 
-    async findAll(): Promise<UserEntity[] | null> {
-        const users = await UserModel.find().exec();
-        if (!users) throw new Error('No users found');
+    async findAll(options: UserFilterOptions): Promise<UserEntity[] | null> {
+        const { status, first_name, last_name, page = 1, sortBy = 'createdAt', order = 'asc'} = options;
+        const filter: Record<string,any> = {};
+
+        if (status) filter.status = status;
+        if (first_name) filter.first_name = { $regex: new RegExp(first_name, 'i') };
+        if (last_name) filter.last_name = { $regex: new RegExp(last_name, 'i') };
+
+        // Orden dinámico
+        const sortOrder = order === 'asc' ? 1 : -1;
+
+         // Paginación
+        const limit = 10;
+        const skip = (page - 1) * limit;
+        const users = await UserModel.find(filter)
+            .sort({ [sortBy]: sortOrder })
+            .skip(skip)
+            .limit(limit)
+            .exec();
+
+        if (!users || users.length === 0) throw new Error('No users found');
+
         return users.map(user => this.toEntity(user));
     }
 }
