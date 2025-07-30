@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
+import { UserFilterOptions, getAllUsersSchema } from '../../application/dto/users';
 
 import { GetUserByIdUseCase } from '../../application/use-cases/users';
 import { MongoUserRepository } from '../../infraestructure';
 import { ZodAdapter } from '../../application/validators/zod.adapter';
-import { getAllUsersSchema, UserFilterOptions } from '../../application/dto/users';
 
 export class UserController {
     private readonly userRepository = new MongoUserRepository();
@@ -24,8 +24,8 @@ export class UserController {
         const validator = new ZodAdapter(getAllUsersSchema);
         const validated = validator.validate(req.query);
         if (!validated) {
-            return res.status(400).json({ error: 'Invalid query parameters' });
-        }   
+            res.status(400).json({ error: 'Invalid query parameters' });
+        }
         const userFilterOptions: UserFilterOptions = {
             page: validated.page ?? 1,
             sortBy: validated.sortBy ?? 'createdAt',
@@ -36,7 +36,7 @@ export class UserController {
             const users = await this.userRepository.findAll(userFilterOptions);
             res.status(200).json({ message: 'Users found', payload: users });
         } catch (error: any) {
-            res.status(404).json({ message: 'Users not found'});
+            res.status(404).json({ message: 'Users not found' });
         }
     };
 
