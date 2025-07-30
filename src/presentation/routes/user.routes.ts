@@ -1,15 +1,18 @@
-import { AuthController } from '../controllers/auth.controller';
 import { Router } from 'express';
+import { UserController } from '../controllers';
 
-export class Authroutes {
+export class Usersroutes {
     static get routes(): Router {
         const router = Router();
 
-        const controller = new AuthController();
+        const controller = new UserController();
 
         // Definir las rutas
-        router.post('/register', controller.register);
-        router.post('/login', controller.login);
+        router.get('/:id', controller.getUserById); // /users/64fbd92a12...
+        // router.get('/', controller.findUsers); // /users?email=emma@mail.com
+        // router.patch('/:id', controller.updatePartialUser); // Solo modifica un campo
+        // router.put('/:id', controller.updateUser); // Reemplaza el usuario completo
+        // router.delete('/:id', controller.deleteUser); // Elimina usuario
         // Puedes agregar más rutas aquí según sea necesario
         return router;
     }

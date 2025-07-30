@@ -24,4 +24,10 @@ export class MongoUserRepository extends UserRepository {
         if (!user) return null;
         return this.toEntity(user);
     }
+
+    async findById(id: string): Promise<UserEntity | null> {
+        const user = await UserModel.findById(id).exec();
+        if (!user) return null;
+        return this.toEntity(user);
+    }
 }
