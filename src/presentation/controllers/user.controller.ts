@@ -1,13 +1,24 @@
+import {
+    DeleteUserUseCase,
+    GetUserByIdUseCase,
+    UpdateUserUseCase,
+} from '../../application/use-cases/users';
 import { Request, Response } from 'express';
-import { UserFilterOptions, getAllUsersSchema } from '../../application/dto/users';
+import {
+    UserFilterOptions,
+    getAllUsersSchema,
+    updateUserSchema,
+} from '../../application/dto/users';
 
-import { GetUserByIdUseCase } from '../../application/use-cases/users';
+import { BcryptEncryptService } from '../../infraestructure/services/bcrypt.encript.service';
 import { MongoUserRepository } from '../../infraestructure';
 import { ZodAdapter } from '../../application/validators/zod.adapter';
 
 export class UserController {
     private readonly userRepository = new MongoUserRepository();
+    private readonly encryptService = new BcryptEncryptService();
     private readonly getUserByIdUseCase = new GetUserByIdUseCase(this.userRepository);
+    private readonly deleteUserUseCase = new DeleteUserUseCase(this.userRepository);
 
     public getUserById = async (req: Request, res: Response) => {
         const { id } = req.params;
@@ -40,15 +51,33 @@ export class UserController {
         }
     };
 
-    // public updatePartialUser = async (req: Request, res: Response) => {
-    //     throw new Error('Method not implemented.');
-    // };
+    public updatePartialUser = async (req: Request, res: Response) => {
+        const { id } = req.params;
+        const data = req.body;
+        const validator = new ZodAdapter(updateUserSchema);
+        const updateUser = new UpdateUserUseCase(
+            this.userRepository,
+            validator,
+            this.encryptService
+        );
+        const updatedUser = await updateUser.execute(id, data);
 
-    // public updateUser = async (req: Request, res: Response) => {
-    //     throw new Error('Method not implemented.');
-    // };
+        if (!updatedUser) {
+            res.status(404).json({ message: 'User not found' });
+        }
 
-    // public deleteUser = async (req: Request, res: Response) => {
-    //     throw new Error('Method not implemented.');
-    // };
+        res.status(200).json({ message: 'User updated', payload: updatedUser });
+    };
+
+    public deleteUser = async (req: Request, res: Response) => {
+        const { id } = req.params;
+
+        const deleted = await this.deleteUserUseCase.execute(id);
+
+        if (!deleted) {
+            res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json({ message: 'User deleted' });
+    };
 }

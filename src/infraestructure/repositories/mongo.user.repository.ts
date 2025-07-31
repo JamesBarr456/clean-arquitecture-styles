@@ -1,7 +1,7 @@
 import { UserEntity } from '../../domain';
+import { UserFilterOptions } from '../../application/dto/users';
 import { UserModel } from '../database/mongo/models';
 import { UserRepository } from '../../domain/repositories';
-import { UserFilterOptions } from '../../application/dto/users';
 
 export class MongoUserRepository extends UserRepository {
     private toEntity(user: any): UserEntity {
@@ -33,8 +33,15 @@ export class MongoUserRepository extends UserRepository {
     }
 
     async findAll(options: UserFilterOptions): Promise<UserEntity[] | null> {
-        const { status, first_name, last_name, page = 1, sortBy = 'createdAt', order = 'asc'} = options;
-        const filter: Record<string,any> = {};
+        const {
+            status,
+            first_name,
+            last_name,
+            page = 1,
+            sortBy = 'createdAt',
+            order = 'asc',
+        } = options;
+        const filter: Record<string, any> = {};
 
         if (status) filter.status = status;
         if (first_name) filter.first_name = { $regex: new RegExp(first_name, 'i') };
@@ -43,7 +50,7 @@ export class MongoUserRepository extends UserRepository {
         // Orden dinámico
         const sortOrder = order === 'asc' ? 1 : -1;
 
-         // Paginación
+        // Paginación
         const limit = 10;
         const skip = (page - 1) * limit;
         const users = await UserModel.find(filter)
@@ -55,5 +62,15 @@ export class MongoUserRepository extends UserRepository {
         if (!users || users.length === 0) throw new Error('No users found');
 
         return users.map(user => this.toEntity(user));
+    }
+
+    async updateUser(id: string, data: Partial<UserEntity>): Promise<UserEntity | null> {
+        const updated = await UserModel.findByIdAndUpdate(id, data, { new: true });
+        return updated ? this.toEntity(updated) : null;
+    }
+
+    async deleteUser(id: string): Promise<boolean> {
+        const result = await UserModel.findByIdAndDelete(id);
+        return result !== null;
     }
 }
