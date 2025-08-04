@@ -1,4 +1,4 @@
-import { UserEntity } from '../entities/user.entity';
+import { UserEntity } from '../entities';
 import { UserFilterOptions } from '../../application/dto/users';
 
 export abstract class UserRepository {

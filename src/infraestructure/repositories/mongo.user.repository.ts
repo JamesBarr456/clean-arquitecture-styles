@@ -65,7 +65,7 @@ export class MongoUserRepository extends UserRepository {
     }
 
     async updateUser(id: string, data: Partial<UserEntity>): Promise<UserEntity | null> {
-        const updated = await UserModel.findByIdAndUpdate(id, data, { new: true });
+        const updated = await UserModel.findByIdAndUpdate(id, data, { new: true, runValidators: true }).exec();
         return updated ? this.toEntity(updated) : null;
     }
 
