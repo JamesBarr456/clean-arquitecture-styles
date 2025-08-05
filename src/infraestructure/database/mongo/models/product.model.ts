@@ -7,7 +7,11 @@ const productSchema = new Schema(
     brand: { type: String, required: true },
     description: { type: String, },
     size: { type: [String], default: [] },
-    genre: { type: [String], default: [] },
+     genre: {
+      type: [String],
+      enum: ['male', 'female', 'unisex', "kids"],
+      default: ['unisex'] 
+    },
     cost_price: { type: Number, required: true },
     sale_price: { type: Number, required: true },
     has_discount: { type: Boolean, default: false },

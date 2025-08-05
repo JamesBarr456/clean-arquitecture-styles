@@ -5,14 +5,32 @@ import { ProductEntity } from "../../domain/entities";
 import { ProductModel } from "../database/mongo/models";
 
 export class MongoProductRepository extends ProductRepository {
+  private toEntity(product: any): ProductEntity {
+  return new ProductEntity(
+    product.name,
+    product.description,
+    product.price,
+    product.category, 
+    product.brand,
+    product.stock,
+    product.sku,
+    product.images,
+    product.created_at,
+    product.updated_at,
+    product.status,
+    product.discount,
+    product.genre, 
+    product._id.toString()
+  );
+}
   async create(product: ProductEntity): Promise<ProductEntity> {
     const createdProduct = await ProductModel.create(product);
-    return createdProduct.toObject();
+    return this.toEntity(createdProduct);
   }
 
   async findById(id: string): Promise<ProductEntity | null> {
     const product = await ProductModel.findById(id);
-    return product ? product.toObject() : null;
+    return product ? this.toEntity(product) : null;
   }
 
   async findAll(options: ProductFilterOptionsDTO): Promise<ProductEntity[]> {
@@ -58,7 +76,7 @@ export class MongoProductRepository extends ProductRepository {
     .limit(limit)
     .exec();
 
-  return products.map(p => p.toObject());
+  return products.map(p => this.toEntity(p));
 }
 
   async update(id: string, product: Partial<ProductEntity>): Promise<ProductEntity | null> {
@@ -66,7 +84,7 @@ export class MongoProductRepository extends ProductRepository {
       new: true,
       runValidators: true
     });
-    return updatedProduct ? updatedProduct.toObject() : null;
+    return updatedProduct ? this.toEntity(updatedProduct) : null;
   }
 
   async delete(id: string): Promise<boolean> {

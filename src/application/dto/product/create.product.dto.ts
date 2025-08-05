@@ -44,11 +44,9 @@ export const createProductDto = z.object({
   
   images: z.array(z.string().url()).optional(),
 
-  genre: z
-  .preprocess(
-    (val) => typeof val === "string" ? [val] : val,
-    z.array(GenreEnum).nonempty("Debe tener al menos un género")
-  )
+   genre: z
+    .array(z.enum(['male', 'female', 'unisex', "kids"]))
+    .default(['unisex']), // Valor por defecto
 
 });
 
