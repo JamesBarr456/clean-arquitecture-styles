@@ -61,4 +61,4 @@ export const productQuerySchema = z.object({
   order: z.enum(['asc', 'desc']).optional(),
 });
 
-export type ProductFilterOptions = z.infer<typeof productQuerySchema>;
+export type ProductFilterOptionsDTO = z.infer<typeof productQuerySchema>;

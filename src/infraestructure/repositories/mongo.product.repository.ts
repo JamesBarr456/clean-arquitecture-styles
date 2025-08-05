@@ -1,4 +1,5 @@
-import { ProductFilterOptions } from "../../application/dto/product";
+
+import { ProductFilterOptionsDTO } from "../../application/dto/product";
 import { ProductRepository } from "../../domain";
 import { ProductEntity } from "../../domain/entities";
 import { ProductModel } from "../database/mongo/models";
@@ -14,7 +15,7 @@ export class MongoProductRepository extends ProductRepository {
     return product ? product.toObject() : null;
   }
 
-  async findAll(options: ProductFilterOptions): Promise<ProductEntity[]> {
+  async findAll(options: ProductFilterOptionsDTO): Promise<ProductEntity[]> {
   const {
     page = 1,
     limit = 10,
