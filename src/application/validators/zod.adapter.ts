@@ -1,12 +1,12 @@
 // infrastructure/validators/ZodAdapter.ts
-import { ZodSchema } from 'zod';
+import { output, ZodTypeAny } from 'zod';
 import { Validation } from './validation';
 
 
-export class ZodAdapter<T> implements Validation<T> {
-  constructor(private readonly schema: ZodSchema<T>) {}
+export class ZodAdapter<T extends ZodTypeAny> implements Validation<output<T>> {
+  constructor(private readonly schema: T) {}
 
-  validate(input: unknown): T {
+  validate(input: unknown): output<T> {
     const result = this.schema.safeParse(input);
     if (!result.success) {
       throw new Error(result.error.errors.map(e => e.message).join('; '));

@@ -6,22 +6,14 @@ export const createProductSchema = z.object({
     sku: z.string().min(1, 'SKU is required'),
     brand: z.string().min(1, 'Brand is required'),
     name: z.string().min(1, 'Name is required'),
-    description: z.string().min(1).optional(),
+    size: z.array(z.string()), // Ej: ['M', 'L']
 
-    cost_price: z.preprocess(
-        val => (val === '' ? undefined : Number(val)),
-        z.number().nonnegative('Cost price must be a non-negative number')
-    ),
+    category: z.array(z.string()).optional(), // Ej: ['electronics', 'clothing']
 
-    has_discount: z.preprocess(
-        val => (val === 'true' ? true : val === 'false' ? false : val),
-        z.boolean().optional()
-    ),
+    image: z.array(z.string().url()).optional(),
 
-    discount_percentage: z.preprocess(
-        val => (val === '' ? undefined : Number(val)),
-        z.number().min(0).max(100).optional()
-    ),
+    genre: z.array((GenreEnum)),
+       description: z.string().min(1).optional(),
 
     discount: z.preprocess(
         val => (val === '' ? undefined : Number(val)),
@@ -38,13 +30,21 @@ export const createProductSchema = z.object({
         z.number().int().nonnegative('Stock must be a non-negative integer').optional()
     ),
 
-    size: z.array(z.string()), // Ej: ['M', 'L']
+  
+    cost_price: z.preprocess(
+        val => (val === '' ? undefined : Number(val)),
+        z.number().nonnegative('Cost price must be a non-negative number')
+    ),
 
-    category: z.array(z.string()).optional(), // Ej: ['electronics', 'clothing']
+    has_discount: z.preprocess(
+        val => (val === 'true' ? true : val === 'false' ? false : val),
+        z.boolean().optional()
+    ),
 
-    image: z.array(z.string().url()).optional(),
-
-    genre: z.array(z.enum(['male', 'female', 'unisex', 'kids'])),
+    discount_percentage: z.preprocess(
+        val => (val === '' ? undefined : Number(val)),
+        z.number().min(0).max(100).optional()
+    ),
 });
 
 export type CreateProductDTO = z.infer<typeof createProductSchema>;

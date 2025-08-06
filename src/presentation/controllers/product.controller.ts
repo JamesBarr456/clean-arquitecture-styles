@@ -6,39 +6,26 @@ import {
 } from '../../application/dto/product';
 
 import { MongoProductRepository } from '../../infraestructure/repositories/mongo.product.repository';
-import { ProductEntity } from '../../domain/entities';
+
 import { ZodAdapter } from '../../application/validators/zod.adapter';
+import { CreateProductUseCase, DeleteProductUseCase, FindAllProductsUseCase, GetProductByIdUseCase, UpdateProductUseCase } from '../../application';
+
+
 
 export class ProductController {
     private readonly productRepository = new MongoProductRepository();
-    private toEntity(product: any): ProductEntity {
-        return new ProductEntity(
-            product.sku,
-            product.brand,
-            product.name,
-            product.size,
-            product.genre,
-            product.cost_price,
-            product.sale_price,
-            product.stock,
-            product.has_discount,
-            product.discount_percentage,
-            product._id.toString(),
-            product.description,
-            product.category,
-            product.image,
-            product.is_active,
-            product.created_at,
-            product.updated_at
-        );
-    }
+    private readonly createProductUseCase = new CreateProductUseCase(this.productRepository);
+    private readonly getProductByIdUseCase = new GetProductByIdUseCase(this.productRepository);
+    private readonly deleteProductUseCase = new DeleteProductUseCase(this.productRepository);
+    private readonly updateProductUseCase = new UpdateProductUseCase(this.productRepository);
+    private readonly findAllProductsUseCase = new FindAllProductsUseCase(this.productRepository);
+    
     public createProduct = async (req: Request, res: Response) => {
         const validator = new ZodAdapter(createProductSchema);
-        const validated = validator.validate(req.body);
-        const product = this.toEntity(validated);
-
+        const validated  = validator.validate(req.body);
+       
         try {
-            const products = await this.productRepository.create(product);
+            const products = await this.createProductUseCase.execute(validated);
             res.status(200).json({ message: 'Product created', payload: products });
         } catch (error: any) {
             res.status(404).json({ message: 'Product not found' });
@@ -48,7 +35,7 @@ export class ProductController {
         const { id } = req.params;
 
         try {
-            const product = await this.productRepository.findById(id);
+            const product = await this.getProductByIdUseCase.execute(id);
             res.status(200).json({ message: 'Product found', payload: product });
         } catch (error: any) {
             res.status(404).json({ message: 'Product not found' });
@@ -59,7 +46,7 @@ export class ProductController {
         const validator = new ZodAdapter(productFiltersSchema);
         const validated = validator.validate(req.query);
         try {
-            const products = await this.productRepository.findAll(validated);
+            const products = await this.findAllProductsUseCase.execute(validated);
             res.status(200).json({ message: 'Products found', payload: products });
         } catch (error: any) {
             res.status(404).json({ message: 'Products not found' });
@@ -72,7 +59,7 @@ export class ProductController {
         const validator = new ZodAdapter(updateProductSchema);
         const validated = validator.validate(data);
         try {
-            const products = await this.productRepository.update(id, validated);
+            const products = await this.updateProductUseCase.execute(id, validated);
             res.status(200).json({ message: 'Product updated', payload: products });
         } catch (error: any) {
             res.status(404).json({ message: 'Products not found' });
@@ -83,7 +70,7 @@ export class ProductController {
         const { id } = req.params;
 
         try {
-            const product = await this.productRepository.delete(id);
+            const product = await this.deleteProductUseCase.execute(id);
             res.status(200).json({ message: 'Product deleted', payload: product });
         } catch (error: any) {
             res.status(404).json({ message: 'Product not found' });
