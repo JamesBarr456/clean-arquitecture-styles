@@ -1,9 +1,13 @@
 import { ProductRepository } from '../../../domain';
 
-export class DeleteProductUseCase {
+export interface DeleteProductUseCase {
+    execute(id: string): Promise<boolean>;
+}
+
+export class DeleteProduct implements DeleteProductUseCase {
     constructor(private readonly productRepository: ProductRepository) {}
 
-    async execute(id: string): Promise<boolean> {
-        return await this.productRepository.delete(id);
+    execute(id: string): Promise<boolean> {
+        return this.productRepository.delete(id);
     }
 }

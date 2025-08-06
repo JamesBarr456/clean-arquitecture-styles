@@ -1,9 +1,9 @@
+import { ProductDatasource } from '../../domain/datasources';
 import { ProductEntity } from '../../domain/entities';
 import { ProductFilterOptionsDTO } from '../../application/dto/product';
 import { ProductModel } from '../database/mongo/models';
-import { ProductRepository } from '../../domain';
 
-export class MongoProductRepository extends ProductRepository {
+export class ProductDatasourceImpl implements ProductDatasource {
     private toEntity(product: any): ProductEntity {
         return new ProductEntity(
             product.name,

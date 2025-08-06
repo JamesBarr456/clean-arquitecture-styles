@@ -1,16 +1,15 @@
 import { ProductEntity } from '../../../domain/entities';
 import { ProductRepository } from '../../../domain';
+import { UpdateProductdDTO } from '../../dto/product';
 
+export interface UpdateProductUseCase {
+    execute(id: string, data: UpdateProductdDTO): Promise<ProductEntity | null>;
+}
 
-export class UpdateProductUseCase {
-    constructor(
-        private readonly productRepository: ProductRepository,
+export class UpdateProduct implements UpdateProductUseCase {
+    constructor(private readonly productRepository: ProductRepository) {}
 
-    ) {}
-
-    async execute(id: string, data: Partial<ProductEntity>): Promise<ProductEntity | null> {
-       
-        const product = await this.productRepository.update(id, data);
-        return product;
+    execute(id: string, data: UpdateProductdDTO): Promise<ProductEntity | null> {
+        return this.productRepository.update(id, data);
     }
 }
