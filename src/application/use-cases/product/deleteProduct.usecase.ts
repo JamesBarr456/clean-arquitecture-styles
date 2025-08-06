@@ -1,12 +1,9 @@
-import { ProductRepository } from "../../../domain";
-import { ProductEntity } from "../../../domain/entities";
-
+import { ProductRepository } from '../../../domain';
 
 export class DeleteProductUseCase {
-  constructor(private readonly productRepository: ProductRepository) {}
+    constructor(private readonly productRepository: ProductRepository) {}
 
-  async execute(data: CreateProductDTO): Promise<ProductEntity> {
-    const product = await this.productRepository.create(data);
-    return product;
-  }
+    async execute(id: string): Promise<boolean> {
+        return await this.productRepository.delete(id);
+    }
 }

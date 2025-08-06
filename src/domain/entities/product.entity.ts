@@ -1,5 +1,3 @@
-
-
 export class ProductEntity {
     constructor(
         public sku: string,
@@ -14,10 +12,10 @@ export class ProductEntity {
         public discount_percentage?: number,
         public id?: string,
         public description?: string | null,
-        public created_at?: Date,
-        public updated_at?: Date,
         public image?: string[], // Ej: ['image1.jpg', 'image2.jpg']
         public is_active?: boolean,
-        public category?: string[] // Ej: ['electronics', 'clothing']
+        public category?: string[], // Ej: ['electronics', 'clothing']
+        public created_at?: Date,
+        public updated_at?: Date
     ) {}
 }

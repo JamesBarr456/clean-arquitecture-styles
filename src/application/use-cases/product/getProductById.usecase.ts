@@ -1,12 +1,19 @@
-import { ProductRepository } from "../../../domain";
-import { ProductEntity } from "../../../domain/entities";
-
+import { ProductEntity } from '../../../domain/entities';
+import { ProductRepository } from '../../../domain';
 
 export class GetProductByIdUseCase {
-  constructor(private readonly productRepository: ProductRepository) {}
+    constructor(private readonly productRepository: ProductRepository) {}
 
-  async execute(data: CreateProductDTO): Promise<ProductEntity> {
-    const product = await this.productRepository.create(data);
-    return product;
-  }
+    async execute(id: string): Promise<ProductEntity | null> {
+        if (!id) {
+            throw new Error('Product ID is required');
+        }
+
+        const product = await this.productRepository.findById(id);
+
+        if (!product) {
+            throw new Error(`Product with ID ${id} not found`);
+        }
+        return product;
+    }
 }

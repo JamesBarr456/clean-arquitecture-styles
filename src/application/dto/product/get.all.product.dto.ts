@@ -1,64 +1,67 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-export const productQuerySchema = z.object({
-  brand: z.string().optional(),
+export const productFiltersSchema = z.object({
+    brand: z.string().optional(),
 
-  category: z
-    .union([z.string(), z.array(z.string())])
-    .transform((val) => (typeof val === "string" ? val.split(",") : val))
-    .optional(),
+    category: z
+        .union([z.string(), z.array(z.string())])
+        .optional()
+        .transform(val => {
+            if (typeof val === 'string') return [val];
+            if (Array.isArray(val)) return val;
+            return undefined;
+        }),
+    genre: z
+        .union([z.string(), z.array(z.string())])
+        .transform(val => (typeof val === 'string' ? val.split(',') : val))
+        .optional(),
 
-  genre: z
-    .union([z.string(), z.array(z.string())])
-    .transform((val) => (typeof val === "string" ? val.split(",") : val))
-    .optional(),
+    has_discount: z.preprocess(
+        val => (val === 'true' ? true : val === 'false' ? false : val),
+        z.boolean().optional()
+    ),
 
-  has_discount: z
-    .string()
-    .transform((val) => val === "true")
-    .optional(),
+    is_active: z
+        .string()
+        .transform(val => val === 'true')
+        .optional(),
 
-  is_active: z
-    .string()
-    .transform((val) => val === "true")
-    .optional(),
+    min_price: z
+        .string()
+        .transform(Number)
+        .refine(n => !isNaN(n), { message: 'min_price debe ser un número' })
+        .optional(),
 
-  min_price: z
-    .string()
-    .transform(Number)
-    .refine((n) => !isNaN(n), { message: "min_price debe ser un número" })
-    .optional(),
+    max_price: z
+        .string()
+        .transform(Number)
+        .refine(n => !isNaN(n), { message: 'max_price debe ser un número' })
+        .optional(),
 
-  max_price: z
-    .string()
-    .transform(Number)
-    .refine((n) => !isNaN(n), { message: "max_price debe ser un número" })
-    .optional(),
+    name: z.string().optional(),
 
-  name: z.string().optional(),
+    size: z
+        .union([z.string(), z.array(z.string())])
+        .transform(val => (typeof val === 'string' ? val.split(',') : val))
+        .optional(),
 
-  size: z
-    .union([z.string(), z.array(z.string())])
-    .transform((val) => (typeof val === "string" ? val.split(",") : val))
-    .optional(),
+    sku: z.string().optional(),
 
-  sku: z.string().optional(),
+    // Control de paginación
+    page: z
+        .string()
+        .transform(Number)
+        .refine(n => n > 0, { message: 'page debe ser mayor a 0' })
+        .optional(),
 
-  // Control de paginación
-  page: z
-    .string()
-    .transform(Number)
-    .refine((n) => n > 0, { message: "page debe ser mayor a 0" })
-    .optional(),
+    limit: z
+        .string()
+        .transform(Number)
+        .refine(n => n > 0, { message: 'limit debe ser mayor a 0' })
+        .optional(),
 
-  limit: z
-    .string()
-    .transform(Number)
-    .refine((n) => n > 0, { message: "limit debe ser mayor a 0" })
-    .optional(),
-
-  sort: z.string().optional(), // Ej: 'price' o '-price'
-  order: z.enum(['asc', 'desc']).optional(),
+    sort: z.string().optional(), // Ej: 'price' o '-price'
+    order: z.enum(['asc', 'desc']).optional(),
 });
 
-export type ProductFilterOptionsDTO = z.infer<typeof productQuerySchema>;
+export type ProductFilterOptionsDTO = z.infer<typeof productFiltersSchema>;
