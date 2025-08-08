@@ -1,7 +1,8 @@
 import {
-    DeleteUserUseCase,
-    GetUserByIdUseCase,
-    UpdateUserUseCase,
+    DeleteUser,
+    GetUser,
+    GetAllUser,
+    UpdateUser
 } from '../../application/use-cases/users';
 import { Request, Response } from 'express';
 import {
@@ -11,73 +12,105 @@ import {
 } from '../../application/dto/users';
 
 import { BcryptEncryptService } from '../../infraestructure/services/bcrypt.encript.service';
-import { MongoUserRepository } from '../../infraestructure';
 import { ZodAdapter } from '../../application/validators/zod.adapter';
+import { UserRepositoryImpl } from '../../infraestructure';
+import { CustomError } from '../../domain';
 
 export class UserController {
-    private readonly userRepository = new MongoUserRepository();
-    private readonly encryptService = new BcryptEncryptService();
-    private readonly getUserByIdUseCase = new GetUserByIdUseCase(this.userRepository);
-    private readonly deleteUserUseCase = new DeleteUserUseCase(this.userRepository);
+   constructor(
+        private readonly userRepository: UserRepositoryImpl,
+        private readonly encryptService: BcryptEncryptService
+    ) {}
 
-    public getUserById = async (req: Request, res: Response) => {
-        const { id } = req.params;
-
+    public getUserById = (req: Request, res: Response) => {
+        
         try {
-            const user = await this.getUserByIdUseCase.execute(id);
+            const { id } = req.params;
+            const user = new GetUser(this.userRepository).execute(id);
             res.status(200).json({ message: 'User found', payload: user });
         } catch (error: any) {
-            res.status(404).json({ message: 'User not found' });
+           const customError = error instanceof CustomError
+                ? error
+                : CustomError.internalServer(error.message);
+            res.status(customError.statusCode).json({
+                message: customError.message,
+                error: error.message,
+            });
         }
     };
 
-    public findUsers = async (req: Request, res: Response) => {
-        const validator = new ZodAdapter(getAllUsersSchema);
-        const validated = validator.validate(req.query);
-        if (!validated) {
-            res.status(400).json({ error: 'Invalid query parameters' });
-        }
-        const userFilterOptions: UserFilterOptions = {
-            page: validated.page ?? 1,
-            sortBy: validated.sortBy ?? 'createdAt',
-            order: validated.order ?? 'asc',
-            ...validated,
-        };
+    public findUsers =  (req: Request, res: Response) => {
+       
         try {
-            const users = await this.userRepository.findAll(userFilterOptions);
+            const validator = new ZodAdapter(getAllUsersSchema);
+            const validated = validator.validate(req.query);
+            if (!validated) {
+                const customError = CustomError.badRequest('Invalid query parameters');
+                res.status(customError.statusCode).json({
+                    message: customError.message,
+                });
+            }
+            const userFilterOptions: UserFilterOptions = {
+                page: validated.page ?? 1,
+                sortBy: validated.sortBy ?? 'createdAt',
+                order: validated.order ?? 'asc',
+                ...validated,
+            };
+            const users = new GetAllUser(this.userRepository).execute(userFilterOptions);
             res.status(200).json({ message: 'Users found', payload: users });
         } catch (error: any) {
-            res.status(404).json({ message: 'Users not found' });
+             const customError = error instanceof CustomError
+                ? error
+                : CustomError.internalServer(error.message);
+            res.status(customError.statusCode).json({
+                message: customError.message,
+                error: error.message,
+            });
         }
     };
 
-    public updatePartialUser = async (req: Request, res: Response) => {
-        const { id } = req.params;
-        const data = req.body;
-        const validator = new ZodAdapter(updateUserSchema);
-        const updateUser = new UpdateUserUseCase(
-            this.userRepository,
-            validator,
-            this.encryptService
-        );
-        const updatedUser = await updateUser.execute(id, data);
+    public updateUser = async (req: Request, res: Response) => {
+        try {
+            const { id } = req.params;
+            const data = req.body;
+            const validator = new ZodAdapter(updateUserSchema);
+            const validated = validator.validate(data);
 
-        if (!updatedUser) {
-            res.status(404).json({ message: 'User not found' });
+            if (!validated) {
+                const customError = CustomError.badRequest('Invalid data');
+                res.status(customError.statusCode).json({
+                    message: customError.message,
+                });
+            }
+
+            const updatedUser = await new UpdateUser(this.userRepository, this.encryptService).execute(id, validated);
+            res.status(200).json({ message: 'User updated', payload: updatedUser });
+    }   catch (error: any) {
+             const customError = error instanceof CustomError
+                ? error
+                : CustomError.internalServer(error.message);
+            res.status(customError.statusCode).json({
+                message: customError.message,
+                error: error.message,
+            });
         }
+}
 
-        res.status(200).json({ message: 'User updated', payload: updatedUser });
-    };
-
-    public deleteUser = async (req: Request, res: Response) => {
-        const { id } = req.params;
-
-        const deleted = await this.deleteUserUseCase.execute(id);
-
-        if (!deleted) {
-            res.status(404).json({ message: 'User not found' });
+    public deleteUser = (req: Request, res: Response) => {
+        try {
+            const { id } = req.params;
+            new DeleteUser(this.userRepository).execute(id);
+           
+            res.status(200).json({ message: 'User deleted' });
+        } catch (error: any) {
+             const customError = error instanceof CustomError
+                ? error
+                : CustomError.internalServer(error.message);
+            res.status(customError.statusCode).json({
+                message: customError.message,
+                error: error.message,
+            });
+            
         }
-
-        res.status(200).json({ message: 'User deleted' });
     };
 }

@@ -1,51 +1,57 @@
-import { MongoAuthRepository, MongoUserRepository } from '../../infraestructure';
+
 import { Request, Response } from 'express';
 
 import { BcryptEncryptService } from '../../infraestructure/services/bcrypt.encript.service';
 import { JwtTokenService } from '../../infraestructure/services/jwt.token.service';
-import { LoginUserUseCase } from '../../application/use-cases/auth';
+import { LoginUser, RegisterUser } from '../../application/use-cases/auth';
 import { RegisterUserSchema } from '../../application/dto/auth';
-import { RegisterUserUseCase } from '../../application/use-cases';
 import { ZodAdapter } from '../../application/validators/zod.adapter';
-import { envs } from '../../config/envs';
 import { loginUserSchema } from '../../application/dto/auth';
+import { AuthRepositoryImpl, UserRepositoryImpl } from '../../infraestructure';
+import { CustomError } from '../../domain';
 
 export class AuthController {
-    private readonly authRepository = new MongoAuthRepository();
-    private readonly userRepository = new MongoUserRepository();
-    private readonly encryptService = new BcryptEncryptService();
-    private readonly tokenService = new JwtTokenService(envs.TOKEN_JWT);
-
+    constructor(
+        private readonly authRepository: AuthRepositoryImpl,
+        private readonly userRepository: UserRepositoryImpl,
+        private readonly encryptService: BcryptEncryptService,
+        private readonly tokenService: JwtTokenService
+    ) {}
     public register = async (req: Request, res: Response) => {
-        const validator = new ZodAdapter(RegisterUserSchema);
-        const registerUser = new RegisterUserUseCase(
-            this.authRepository,
-            validator,
-            this.encryptService
-        );
-
+       
         try {
-            const result = await registerUser.execute(req.body);
+            const validator = new ZodAdapter(RegisterUserSchema);
+            const validated = validator.validate(req.body);
+        
+            const result = await new RegisterUser(this.authRepository,this.encryptService ).execute(validated);
             res.status(201).json({ message: 'Register successful', payload: result });
-        } catch (err: any) {
-            res.status(400).json({ error: err.message });
+        } catch (error: any) {
+             const customError = error instanceof CustomError
+                            ? error
+                            : CustomError.internalServer(error.message);
+                        res.status(customError.statusCode).json({
+                            message: customError.message,
+                            error: error.message,
+                        });
         }
     };
 
     public login = async (req: Request, res: Response) => {
-        const validator = new ZodAdapter(loginUserSchema);
-        const loginUser = new LoginUserUseCase(
-            this.userRepository,
-            validator,
-            this.encryptService,
-            this.tokenService
-        );
-
+       
         try {
-            const result = await loginUser.execute(req.body);
+            const validator = new ZodAdapter(loginUserSchema);
+            const validated = validator.validate(req.body);
+
+            const result = await new LoginUser(this.userRepository, this.encryptService, this.tokenService).execute(validated);
             res.status(200).json({ message: 'Login successful', payload: result });
-        } catch (err: any) {
-            res.status(400).json({ error: err.message });
+        } catch (error: any) {
+            const customError = error instanceof CustomError
+                            ? error
+                            : CustomError.internalServer(error.message);
+                        res.status(customError.statusCode).json({
+                            message: customError.message,
+                            error: error.message,
+                        });
         }
     };
 }

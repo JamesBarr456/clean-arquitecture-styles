@@ -1,2 +1,3 @@
-export * from './mongo.user.repository';
-export * from './mongo.auth.repository';
+export * from './user.repository.impl';
+export * from './auth.repository.impl';
+export * from './product.repository.impl';

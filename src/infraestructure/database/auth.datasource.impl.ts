@@ -1,8 +1,8 @@
-import { AuthRepository } from '../../domain/repositories/auth.repository';
-import { UserEntity } from '../../domain';
-import { UserModel } from '../database/mongo/models';
+import { UserEntity } from "../../domain";
+import { AuthDatasource } from "../../domain/datasources";
+import { UserModel } from "./mongo/models";
 
-export class MongoAuthRepository extends AuthRepository {
+export class AuthDatasourceImpl extends AuthDatasource {
     private toEntity(user: any): UserEntity {
         return new UserEntity(
             user.first_name,

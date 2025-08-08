@@ -1,9 +1,9 @@
 import { UserEntity } from '../../domain';
 import { UserFilterOptions } from '../../application/dto/users';
 import { UserModel } from '../database/mongo/models';
-import { UserRepository } from '../../domain/repositories';
+import {  UserDatasource } from '../../domain/datasources';
 
-export class MongoUserRepository extends UserRepository {
+export class UserDatasourceImpl implements UserDatasource {
     private toEntity(user: any): UserEntity {
         return new UserEntity(
             user.first_name,
@@ -64,12 +64,12 @@ export class MongoUserRepository extends UserRepository {
         return users.map(user => this.toEntity(user));
     }
 
-    async updateUser(id: string, data: Partial<UserEntity>): Promise<UserEntity | null> {
+    async update(id: string, data: Partial<UserEntity>): Promise<UserEntity | null> {
         const updated = await UserModel.findByIdAndUpdate(id, data, { new: true, runValidators: true }).exec();
         return updated ? this.toEntity(updated) : null;
     }
 
-    async deleteUser(id: string): Promise<boolean> {
+    async delete(id: string): Promise<boolean> {
         const result = await UserModel.findByIdAndDelete(id);
         return result !== null;
     }

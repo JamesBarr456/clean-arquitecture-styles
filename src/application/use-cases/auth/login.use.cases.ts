@@ -1,36 +1,41 @@
 import { EncryptService } from '../../../domain/services/encrypt.service';
-import { LoginUserDto } from '../../dto/auth/login.auth.dto';
+
 import { TokenService } from '../../../domain/services/token.service';
 import { UserEntity } from '../../../domain/entities/user.entity';
 import { UserRepository } from '../../../domain/repositories/user.repository';
-import { Validation } from '../../validators/validation';
+import { GetUserByEmail } from '../users';
 
-export class LoginUserUseCase {
+
+
+export interface LoginUserUseCase {
+    execute(input: { email: string, password: string}): Promise<{ user: UserEntity; token: string }>;
+}
+export class LoginUser implements LoginUserUseCase {
     constructor(
         private readonly userRepository: UserRepository,
-        private readonly validator: Validation<LoginUserDto>,
         private readonly encryptService: EncryptService,
         private readonly tokenService: TokenService
     ) {}
 
-    async execute(input: any): Promise<{ user: UserEntity; token: string }> {
-        const validated = this.validator.validate(input);
-        const user = await this.userRepository.findByEmail(validated.email);
-        if (!user) {
+    async execute(input:{ email: string, password: string} ): Promise<{ user: UserEntity; token: string }> {
+      
+        const validateUser = await new GetUserByEmail(this.userRepository).execute(input.email);
+        if (!validateUser) {
             throw new Error('Email not found');
         }
         const comparePassword = await this.encryptService.compare(
-            validated.password,
-            user.password
+            input.password,
+            validateUser.password
         );
+
         if (!comparePassword) {
             throw new Error('Invalid password');
         }
         const token = this.tokenService.sign({
-            id: user.id,
-            email: user.email,
-            status: user.status,
+            id: validateUser.id,
+            email: validateUser.email,
+            status: validateUser.status,
         });
-        return { user, token };
+        return { user: validateUser, token };
     }
 }

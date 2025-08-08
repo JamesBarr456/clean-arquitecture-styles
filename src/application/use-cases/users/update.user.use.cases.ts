@@ -1,20 +1,20 @@
 import { EncryptService } from '../../../domain/services/encrypt.service';
 import { UserRepository } from '../../../domain';
 import { UserUpdate } from '../../dto/users';
-import { Validation } from '../../validators/validation';
 
-export class UpdateUserUseCase {
+export interface UpdateUserUseCase {
+    execute(id: string, data: UserUpdate): Promise<UserUpdate | null>;
+}
+export class UpdateUser implements UpdateUserUseCase {
     constructor(
         private readonly userRepository: UserRepository,
-        private readonly validator: Validation<UserUpdate>,
         private readonly encryptService: EncryptService
     ) {}
 
     async execute(id: string, data: UserUpdate) {
-        const validated = this.validator.validate(data);
-        if (validated.password) {
-            validated.password = await this.encryptService.hash(validated.password);
+        if (data.password) {
+        data.password = await this.encryptService.hash(data.password);
         }
-        return await this.userRepository.updateUser(id, validated);
+        return await this.userRepository.update(id, data);
     }
 }

@@ -1,11 +1,13 @@
 import { UserEntity, UserRepository } from '../../../domain';
 import { UserFilterOptions } from '../../dto/users';
-
-export class GetAllUserByIdUseCase {
+export interface GetAllUserByIdUseCase {
+    execute(options: UserFilterOptions): Promise<UserEntity[] | null>;
+}
+export class GetAllUser implements GetAllUserByIdUseCase {
     constructor(private readonly userRepository: UserRepository) {}
 
-    async execute(options: UserFilterOptions): Promise<UserEntity[] | null> {
-        const users = await this.userRepository.findAll(options);
+    execute(options: UserFilterOptions): Promise<UserEntity[] | null> {
+        const users = this.userRepository.findAll(options);
 
         if (!users) {
             throw new Error(`Users not founds`);

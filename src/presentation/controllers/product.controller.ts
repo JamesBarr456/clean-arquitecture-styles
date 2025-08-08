@@ -13,7 +13,7 @@ import {
     updateProductSchema,
 } from '../../application/dto/product';
 
-import { ProductRepository } from '../../domain';
+import { CustomError, ProductRepository } from '../../domain';
 
 export class ProductController {
     constructor(private readonly productRepository: ProductRepository) {}
@@ -27,15 +27,18 @@ export class ProductController {
 
             res.status(201).json({ message: 'Product created', payload: product });
         } catch (error: any) {
-            if (error instanceof ZodValidationError) {
-                res.status(400).json({
-                    message: 'Validation failed',
+             if (error instanceof ZodValidationError) {
+                const customError = CustomError.badRequest('Validation failed');
+                res.status(customError.statusCode).json({
+                    message: customError.message,
                     errors: error.issues,
                 });
             }
-
-            res.status(500).json({
-                message: 'Internal server error',
+            const customError = error instanceof CustomError
+                ? error
+                : CustomError.internalServer(error.message);
+            res.status(customError.statusCode).json({
+                message: customError.message,
                 error: error.message,
             });
         }
@@ -46,12 +49,15 @@ export class ProductController {
             const { id } = req.params;
             const product = await new GetProduct(this.productRepository).execute(id);
 
-            if (!product) {
-                res.status(404).json({ message: 'Product not found' });
-            }
             res.status(200).json({ message: 'Product found', payload: product });
         } catch (error: any) {
-            res.status(500).json({ message: 'Error retrieving product', error: error.message });
+            const customError = error instanceof CustomError
+                ? error
+                : CustomError.internalServer(error.message);
+            res.status(customError.statusCode).json({
+                message: customError.message,
+                error: error.message,
+            });
         }
     };
 
@@ -64,7 +70,13 @@ export class ProductController {
 
             res.status(200).json({ message: 'Products found', payload: products });
         } catch (error: any) {
-            res.status(404).json({ message: 'Products not found', error: error.message });
+             const customError = error instanceof CustomError
+                ? error
+                : CustomError.notFound(error.message);
+            res.status(customError.statusCode).json({
+                message: customError.message,
+                error: error.message,
+            });
         }
     };
 
@@ -77,12 +89,18 @@ export class ProductController {
 
             const product = await new UpdateProduct(this.productRepository).execute(id, validated);
 
-            if (!product) {
-                res.status(404).json({ message: 'Product not found' });
+             if (!product) {
+                throw CustomError.notFound('Product not found');
             }
             res.status(200).json({ message: 'Product updated', payload: product });
         } catch (error: any) {
-            res.status(500).json({ message: 'Error updating product', error: error.message });
+             const customError = error instanceof CustomError
+                ? error
+                : CustomError.internalServer(error.message);
+            res.status(customError.statusCode).json({
+                message: customError.message,
+                error: error.message,
+            });
         }
     };
 
@@ -90,13 +108,18 @@ export class ProductController {
         try {
             const { id } = req.params;
             const deleted = await new DeleteProduct(this.productRepository).execute(id);
-
             if (!deleted) {
-                res.status(404).json({ message: 'Product not found' });
+                throw CustomError.notFound('Product not found');
             }
             res.status(200).json({ message: 'Product deleted' });
         } catch (error: any) {
-            res.status(500).json({ message: 'Error deleting product', error: error.message });
+            const customError = error instanceof CustomError
+                ? error
+                : CustomError.internalServer(error.message);
+            res.status(customError.statusCode).json({
+                message: customError.message,
+                error: error.message,
+            });
         }
     };
 }

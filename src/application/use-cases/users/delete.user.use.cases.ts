@@ -1,9 +1,12 @@
 import { UserRepository } from '../../../domain';
 
-export class DeleteUserUseCase {
+export interface DeleteUserUseCase {
+    execute(id: string): Promise<boolean>;
+}
+export class DeleteUser implements DeleteUserUseCase {
     constructor(private readonly userRepository: UserRepository) {}
 
-    async execute(id: string) {
-        return await this.userRepository.deleteUser(id);
+    execute(id: string): Promise<boolean> {
+        return this.userRepository.delete(id);
     }
 }

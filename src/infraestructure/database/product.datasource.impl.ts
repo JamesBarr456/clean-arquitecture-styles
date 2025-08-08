@@ -21,8 +21,6 @@ export class ProductDatasourceImpl implements ProductDatasource {
             product.image,
             product.is_active,
             product.category,
-            product.created_at,
-            product.updated_at
         );
     }
     async create(product: ProductEntity): Promise<ProductEntity> {
