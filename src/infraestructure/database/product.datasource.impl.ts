@@ -6,20 +6,23 @@ import { ProductModel } from '../database/mongo/models';
 export class ProductDatasourceImpl implements ProductDatasource {
     private toEntity(product: any): ProductEntity {
         return new ProductEntity(
-            product.name,
-            product.description,
-            product.price,
-            product.category,
-            product.brand,
-            product.stock,
             product.sku,
-            product.images,
-            product.created_at,
-            product.updated_at,
-            product.status,
-            product.discount,
+            product.brand,
+            product.name,
+            product.size,
             product.genre,
-            product._id.toString()
+            product.cost_price,
+            product.sale_price,
+            product.stock,
+            product.has_discount,
+            product.discount_percentage,
+            product._id.toString(),
+            product.description,
+            product.image,
+            product.is_active,
+            product.category,
+            product.created_at,
+            product.updated_at
         );
     }
     async create(product: ProductEntity): Promise<ProductEntity> {

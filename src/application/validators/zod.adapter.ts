@@ -1,16 +1,26 @@
-// infrastructure/validators/ZodAdapter.ts
-import { output, ZodTypeAny } from 'zod';
-import { Validation } from './validation';
+import { ZodTypeAny, output } from 'zod';
 
+export class ZodValidationError extends Error {
+    public readonly issues: { field: string; message: string }[];
 
-export class ZodAdapter<T extends ZodTypeAny> implements Validation<output<T>> {
-  constructor(private readonly schema: T) {}
-
-  validate(input: unknown): output<T> {
-    const result = this.schema.safeParse(input);
-    if (!result.success) {
-      throw new Error(result.error.errors.map(e => e.message).join('; '));
+    constructor(issues: { field: string; message: string }[]) {
+        super('Validation error');
+        this.issues = issues;
     }
-    return result.data;
-  }
+}
+
+export class ZodAdapter<T extends ZodTypeAny> {
+    constructor(private readonly schema: T) {}
+
+    validate(input: unknown): output<T> {
+        const result = this.schema.safeParse(input);
+        if (!result.success) {
+            const issues = result.error.errors.map(err => ({
+                field: err.path.join('.'),
+                message: err.message,
+            }));
+            throw new ZodValidationError(issues);
+        }
+        return result.data;
+    }
 }

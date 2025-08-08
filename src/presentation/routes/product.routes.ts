@@ -11,6 +11,7 @@ export class Productsroutes {
         const productController = new ProductController(productRepository);
 
         // Definir las rutas
+        router.post('/', productController.createProduct); // Crea usuario
         router.get('/:id', productController.getProductById); // /users/64fbd92a12...
         router.get('/', productController.findProducts); // /users?email=emma@mail.com
         router.patch('/:id', productController.updateProducts); // Solo modifica un campo
