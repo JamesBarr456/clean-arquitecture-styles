@@ -1,4 +1,5 @@
-import { CustomError } from '../errors/custom.error';
+import { UserRole, UserStatus } from "../types/user.type";
+
 
 export class UserEntity {
     constructor(
@@ -6,29 +7,15 @@ export class UserEntity {
         public last_name: string,
         public email: string,
         public password: string,
+        public role: UserRole = 'customer',
+        public status: UserStatus = 'active',
+        public id?: string,
         public dni?: string,
-        public number_phone?: string,
+        public phone?: { number: string; country_code: string },
+        public avatar?: string,
         public created_at?: Date,
         public updated_at?: Date,
-        public id?: string,
-        public avatar?: string,
-        public status: 'admin' | 'customer' | 'employee' = 'customer'
+        public last_login?: Date,
     ) {}
 
-    static createFromRegister(data: {
-        first_name: string;
-        last_name: string;
-        email: string;
-        password: string;
-    }): UserEntity {
-        const { first_name, last_name, email, password } = data;
-
-        // 🔒 Validaciones mínimas de dominio
-        if (!first_name) throw CustomError.badRequest('First name is required');
-        if (!last_name) throw CustomError.badRequest('Last name is required');
-        if (!email) throw CustomError.badRequest('Email is required');
-        if (!password) throw CustomError.badRequest('Password is requiered');
-
-        return new UserEntity(first_name, last_name, email, password);
-    }
 }
