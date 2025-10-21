@@ -30,10 +30,15 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: '',
     },
+    roles: {
+        type: [String],
+        enum: ['admin', 'customer', 'seller', 'cashier', 'warehouse'],
+        default: ['customer'],
+    },
     status: {
         type: String,
-        enum: ['admin', 'customer', 'employee'],
-        default: 'customer',
+        enum: ['active', 'inactive', 'suspended', 'blocked'],
+        default: 'active',
     },
     created_at: {
         type: Date,

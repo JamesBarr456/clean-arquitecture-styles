@@ -1,5 +1,4 @@
-import { UserRole, UserStatus } from "../types/user.type";
-
+import { UserRole, UserStatus } from '../types/user.type';
 
 export class UserEntity {
     constructor(
@@ -7,7 +6,7 @@ export class UserEntity {
         public last_name: string,
         public email: string,
         public password: string,
-        public role: UserRole = 'customer',
+        public roles: UserRole[] = ['customer'],
         public status: UserStatus = 'active',
         public id?: string,
         public dni?: string,
@@ -15,7 +14,6 @@ export class UserEntity {
         public avatar?: string,
         public created_at?: Date,
         public updated_at?: Date,
-        public last_login?: Date,
+        public last_login?: Date
     ) {}
-
 }
