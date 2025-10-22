@@ -9,6 +9,7 @@ import { UserEntity } from '../../../../domain/entities/user.entity';
 const mockUserRepository: jest.Mocked<UserRepository> = {
     findById: jest.fn(),
     findByEmail: jest.fn(),
+    findByResetToken: jest.fn(),
     findAll: jest.fn(),
     updateUser: jest.fn(),
     deleteUser: jest.fn(),

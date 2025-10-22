@@ -16,7 +16,9 @@ export class UserEntity {
         public avatar?: string,
         public readonly created_at?: Date,
         public updated_at?: Date,
-        public last_login?: Date
+        public last_login?: Date,
+        public reset_password_token?: string,
+        public reset_password_expires?: Date
     ) {}
     // Métodos de negocio
     hasRole(role: UserRole): boolean {
@@ -48,6 +50,27 @@ export class UserEntity {
 
     getFullName(): string {
         return `${this.first_name} ${this.last_name}`;
+    }
+
+    // Métodos para manejo de reset password
+    setResetPasswordToken(token: string, expiresInMinutes: number = 60): void {
+        this.reset_password_token = token;
+        this.reset_password_expires = new Date(Date.now() + expiresInMinutes * 60 * 1000);
+        this.touch();
+    }
+
+    clearResetPasswordToken(): void {
+        this.reset_password_token = undefined;
+        this.reset_password_expires = undefined;
+        this.touch();
+    }
+
+    isResetPasswordTokenValid(token: string): boolean {
+        if (!this.reset_password_token || !this.reset_password_expires) {
+            return false;
+        }
+
+        return this.reset_password_token === token && this.reset_password_expires > new Date();
     }
 
     // Factory method

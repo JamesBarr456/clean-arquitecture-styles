@@ -12,16 +12,13 @@ export class ChangePasswordUseCase {
     ) {}
 
     async execute(input: any, userId: string): Promise<{ message: string }> {
-        // Validar datos de entrada
         const validated = this.validator.validate(input);
 
-        // Buscar usuario por ID
         const user = await this.userRepository.findById(userId);
         if (!user) {
             throw CustomError.notFound('Usuario no encontrado');
         }
 
-        // Verificar contraseña actual
         const isCurrentPasswordValid = await this.encryptService.compare(
             validated.currentPassword,
             user.getPassword()
@@ -31,13 +28,10 @@ export class ChangePasswordUseCase {
             throw CustomError.badRequest('Contraseña actual incorrecta');
         }
 
-        // Encriptar nueva contraseña
         const hashedNewPassword = await this.encryptService.hash(validated.newPassword);
 
-        // Actualizar contraseña en el usuario
         user.updatePassword(hashedNewPassword);
 
-        // Guardar cambios
         await this.userRepository.updateUser(userId, {
             password: hashedNewPassword,
             updated_at: user.updated_at,

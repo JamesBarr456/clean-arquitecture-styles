@@ -5,7 +5,7 @@ import { UserRepository } from '../../domain/repositories';
 
 export class MongoUserRepository extends UserRepository {
     private toEntity(user: any): UserEntity {
-        return new UserEntity(
+        const entity = new UserEntity(
             user.first_name,
             user.last_name,
             user.email,
@@ -18,10 +18,29 @@ export class MongoUserRepository extends UserRepository {
             user.avatar,
             user.status
         );
+
+        // Agregar campos de reset password si existen
+        if (user.reset_password_token) {
+            entity.reset_password_token = user.reset_password_token;
+        }
+        if (user.reset_password_expires) {
+            entity.reset_password_expires = user.reset_password_expires;
+        }
+
+        return entity;
     }
 
     async findByEmail(email: string): Promise<UserEntity | null> {
         const user = await UserModel.findOne({ email }).exec();
+        if (!user) return null;
+        return this.toEntity(user);
+    }
+
+    async findByResetToken(token: string): Promise<UserEntity | null> {
+        const user = await UserModel.findOne({
+            reset_password_token: token,
+            reset_password_expires: { $gt: new Date() },
+        }).exec();
         if (!user) return null;
         return this.toEntity(user);
     }
