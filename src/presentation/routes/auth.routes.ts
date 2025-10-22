@@ -1,4 +1,5 @@
 import { AuthController } from '../controllers';
+import { AuthMiddleware } from '../middlewares/auth.middleware';
 import { Router } from 'express';
 
 export class Authroutes {
@@ -7,10 +8,11 @@ export class Authroutes {
 
         const controller = new AuthController();
 
-        // Definir las rutas
         router.post('/register', controller.register);
         router.post('/login', controller.login);
-        // Puedes agregar más rutas aquí según sea necesario
+
+        router.put('/change-password', AuthMiddleware.validateJWT, controller.changePassword);
+
         return router;
     }
 }

@@ -27,7 +27,7 @@ export class LoginUserUseCase {
             throw new Error('Invalid password');
         }
         const token = this.tokenService.sign({
-            id: user.id,
+            id: user.user_id,
             email: user.email,
             status: user.status,
         });
