@@ -14,7 +14,7 @@ export class RegisterUserUseCase {
     async execute(input: any): Promise<UserEntity> {
         const validated = this.validator.validate(input);
         const hashedPassword = await this.encryptService.hash(validated.password);
-        const newUser = UserEntity.createFromRegister({
+        const newUser = UserEntity.create({
             ...validated,
             password: hashedPassword,
         });

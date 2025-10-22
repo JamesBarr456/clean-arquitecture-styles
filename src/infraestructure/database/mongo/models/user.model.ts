@@ -1,6 +1,11 @@
 import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
+    user_id: {
+        type: String,
+        required: true,
+        unique: true,
+    },
     first_name: {
         type: String,
         required: true,
@@ -13,9 +18,15 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: '',
     },
-    number_phone: {
-        type: String,
-        default: '',
+    phone: {
+        country_code: {
+            type: String,
+            default: '',
+        },
+        number: {
+            type: String,
+            default: '',
+        },
     },
     email: {
         type: String,
@@ -47,6 +58,10 @@ const userSchema = new mongoose.Schema({
     updated_at: {
         type: Date,
         default: Date.now,
+    },
+    last_login: {
+        type: Date,
+        default: null,
     },
 });
 
