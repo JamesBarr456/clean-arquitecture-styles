@@ -15,7 +15,7 @@ export class UserEntity {
         public avatar?: string,
         public readonly created_at?: Date,
         public updated_at?: Date,
-        public last_login?: Date,
+        public last_login?: Date
     ) {}
 // Métodos de negocio
   hasRole(role: UserRole): boolean {
