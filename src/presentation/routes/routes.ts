@@ -1,6 +1,7 @@
 import { Authroutes } from './auth.routes';
 import { Router } from 'express';
 import { Usersroutes } from './user.routes';
+import { CustomerRoutes } from './customer.routes';
 
 export class AppRoutes {
     static get routes(): Router {
@@ -9,6 +10,7 @@ export class AppRoutes {
         // Definir las rutas
         router.use('/auth', Authroutes.routes);
         router.use('/users', Usersroutes.routes);
+        router.use('/users/me/customer', CustomerRoutes.routes); // Rutas específicas de customer
         return router;
     }
 }

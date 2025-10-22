@@ -20,11 +20,14 @@ export interface CustomerRiskProfile {
 
 export interface CustomerAddress {
     street: string;
+    number: string;
+    apartment?: string;
     locality: string;
     city: string;
     province: string;
     postal_code?: string;
     is_default?: boolean;
+    references?: string;
 }
 
 export interface OrderSummary {
