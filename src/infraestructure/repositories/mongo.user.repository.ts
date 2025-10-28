@@ -6,17 +6,19 @@ import { UserRepository } from '../../domain/repositories';
 export class MongoUserRepository extends UserRepository {
     private toEntity(user: any): UserEntity {
         const entity = new UserEntity(
-            user.first_name,
-            user.last_name,
-            user.email,
-            user.password,
-            user.dni,
-            user.number_phone,
-            user.created_at,
-            user.updated_at,
-            user._id.toString(),
-            user.avatar,
-            user.status
+            user.first_name, // first_name
+            user.last_name, // last_name
+            user.email, // email
+            user.password, // password
+            user.roles || ['customer'], // roles (array)
+            user.status || 'active', // status
+            user._id.toString(), // user_id
+            user.dni, // dni
+            user.number_phone || { country_code: '', number: '' }, // phone
+            user.avatar, // avatar
+            user.created_at, // created_at
+            user.updated_at, // updated_at
+            user.last_login // last_login
         );
 
         // Agregar campos de reset password si existen
