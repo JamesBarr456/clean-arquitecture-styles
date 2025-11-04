@@ -21,7 +21,6 @@ export class MongoUserRepository extends UserRepository {
             user.last_login // last_login
         );
 
-        // Agregar campos de reset password si existen
         if (user.reset_password_token) {
             entity.reset_password_token = user.reset_password_token;
         }
@@ -30,6 +29,25 @@ export class MongoUserRepository extends UserRepository {
         }
 
         return entity;
+    }
+
+     async create(user: UserEntity): Promise<UserEntity> {
+            const created = await UserModel.create({
+                user_id: user.user_id,
+                first_name: user.first_name,
+                last_name: user.last_name,
+                email: user.email,
+                password: user.password,
+                dni: user.dni,
+                phone: user.phone,
+                avatar: user.avatar,
+                roles: user.roles,
+                status: user.status,
+                created_at: user.created_at,
+                updated_at: user.updated_at,
+                last_login: user.last_login,
+            });
+            return this.toEntity(created);
     }
 
     async findByEmail(email: string): Promise<UserEntity | null> {

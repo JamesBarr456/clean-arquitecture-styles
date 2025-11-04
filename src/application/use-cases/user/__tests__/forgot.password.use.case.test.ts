@@ -1,4 +1,4 @@
-import { ForgotPasswordUseCase } from '../forgot.password.use.case';
+import { ForgotPasswordUseCase } from '../forgot.password.user.use.case';
 import { UserRepository } from '../../../../domain/repositories/user.repository';
 import { Validation } from '../../../validators/validation';
 import { ForgotPasswordDto } from '../../../dto/auth/forgot.password.dto';

@@ -8,7 +8,8 @@ export const updateUserSchema = z.object({
     dni: z.string().optional(),
     number_phone: z.string().optional(),
     avatar: z.string().optional(),
-    status: z.enum(['customer', 'employee', 'admin']).optional(),
+    role: z.enum(['admin', 'customer', 'seller', 'cashier', 'warehouse']).optional(),
+    status: z.enum(['active', 'inactive', 'suspended']).optional(),
 });
 
 export type UserUpdate = z.infer<typeof updateUserSchema>;

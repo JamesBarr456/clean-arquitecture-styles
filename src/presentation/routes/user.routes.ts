@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { UserController } from '../controllers';
+import { AuthMiddleware } from '../middlewares/auth.middleware';
 
 export class Usersroutes {
     static get routes(): Router {
@@ -8,11 +9,15 @@ export class Usersroutes {
         const controller = new UserController();
 
         // Definir las rutas
-        router.get('/:id', controller.getUserById); // /users/64fbd92a12...
-        router.get('/', controller.findUsers); // /users?email=emma@mail.com
-        router.patch('/:id', controller.updatePartialUser); // Solo modifica un campo
-        router.delete('/:id', controller.deleteUser); // Elimina usuario
-        // Puedes agregar más rutas aquí según sea necesario
+        router.post('/register', controller.register);
+        router.post('/login', controller.login);
+        router.post('/forgot-password', controller.forgotPassword);
+        router.post('/reset-password', controller.resetPassword);
+        router.put('/change-password', AuthMiddleware.validateJWT, controller.changePassword);
+        router.get('/:id', controller.getUserById); 
+        router.get('/', controller.findUsers);
+        router.patch('/:id', controller.updatePartialUser); 
+        router.delete('/:id', controller.deleteUser); 
         return router;
     }
 }

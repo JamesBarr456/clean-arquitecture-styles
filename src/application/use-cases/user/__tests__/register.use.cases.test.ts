@@ -1,4 +1,4 @@
-import { RegisterUserUseCase } from '../register.use.cases';
+import { RegisterUserUseCase } from '../register.user.use.cases';
 import { AuthRepository } from '../../../../domain/repositories/auth.repository';
 import { EncryptService } from '../../../../domain/services/encrypt.service';
 import { Validation } from '../../../validators/validation';

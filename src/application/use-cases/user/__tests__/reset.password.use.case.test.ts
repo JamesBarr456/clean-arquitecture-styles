@@ -1,4 +1,4 @@
-import { ResetPasswordUseCase } from '../reset.password.use.case';
+import { ResetPasswordUseCase } from '../reset.password.user.use.case';
 import { UserRepository } from '../../../../domain/repositories/user.repository';
 import { EncryptService } from '../../../../domain/services/encrypt.service';
 import { EmailService } from '../../../../domain/services/email.service';

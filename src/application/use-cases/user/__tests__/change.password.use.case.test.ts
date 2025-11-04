@@ -1,4 +1,4 @@
-import { ChangePasswordUseCase } from '../change.password.use.case';
+import { ChangePasswordUseCase } from '../change.password.user.use.case';
 import { UserRepository } from '../../../../domain/repositories/user.repository';
 import { EncryptService } from '../../../../domain/services/encrypt.service';
 import { Validation } from '../../../validators/validation';
