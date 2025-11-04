@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { UserController } from '../controllers';
 import { AuthMiddleware } from '../middlewares/auth.middleware';
 
-export class Usersroutes {
+export class Userroutes {
     static get routes(): Router {
         const router = Router();
 
